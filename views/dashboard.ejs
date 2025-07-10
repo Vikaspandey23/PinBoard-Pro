@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<main class="max-w-7xl mx-auto p-6">
+    <!-- Upload Button -->
+    <button onclick="openModal()" class="fixed bottom-6 right-6 bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-indigo-700 z-50">
+        Upload
+    </button>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg p-6 w-96 relative">
+            <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+            <h2 id="modalTitle" class="text-xl font-bold mb-4">Upload a New Pin</h2>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="text" name="title" placeholder="Title" required class="mb-2 w-full px-3 py-2 border rounded" />
+                <input type="text" name="description" placeholder="Description" required class="mb-2 w-full px-3 py-2 border rounded" />
+                <input type="file" name="image" required class="mb-4 w-full" />
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recently Added Pins -->
+    <section class="mb-12" id="recent-pins">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Recently added</h2>
+        <div id="pinsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <% pins.forEach(pin => { %>
+                <div class="pin-card bg-white rounded-lg overflow-hidden shadow-md">
+                    <div class="relative">
+                        <img src="<%= pin.imageUrl %>" alt="<%= pin.title %>" class="w-full h-64 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-gray-800 mb-1"><%= pin.title %></h3>
+                        <p class="text-sm text-gray-600 mb-2"><%= pin.description %></p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <img src="/images/default-user.jpg" alt="User" class="h-6 w-6 rounded-full mr-2">
+                            <span><%= pin.user?.username || 'Anonymous' %></span>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </section>
+
+    <% if (typeof include === 'function') { %>
+        <%- include('partials/userBoards') %>
+        <%- include('partials/footer') %>
+    <% } %>
+</main>
+
+<!-- Upload Script -->
+<script>
+function openModal() {
+    document.getElementById("uploadModal").classList.remove("hidden");
+}
+function closeModal() {
+    document.getElementById("uploadModal").classList.add("hidden");
+}
+
+document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    const response = await fetch("/pins/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        const grid = document.getElementById("pinsGrid");
+        const pinHTML = `
+            <div class="pin-card bg-white rounded-lg overflow-hidden shadow-md">
+                <div class="relative">
+                    <img src="${data.pin.imageUrl}" class="w-full h-64 object-cover">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800 mb-1">${data.pin.title}</h3>
+                    <p class="text-sm text-gray-600 mb-2">${data.pin.description}</p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <img src="/images/default-user.jpg" class="h-6 w-6 rounded-full mr-2">
+                        <span>${data.pin.user}</span>
+                    </div>
+                </div>
+            </div>`;
+        grid.insertAdjacentHTML("afterbegin", pinHTML);
+        closeModal();
+        this.reset();
+    } else {
+        alert("Failed to upload pin.");
+    }
+});
+</script>
+</body>
+</html>

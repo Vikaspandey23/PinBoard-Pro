@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PinBoard Pro - Visual Discovery Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    .pin-card {
+      transition: all 0.3s ease;
+    }
+    .pin-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .dropzone {
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .dropzone.active {
+      border-color: #667eea;
+      background-color: #ebf4ff;
+    }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen">
+
+  <!-- Upload Modal -->
+  <div id="upload-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 max-w-xl w-full relative">
+      <button onclick="closeModal()" class="absolute top-3 right-4 text-gray-500 text-2xl hover:text-red-600">&times;</button>
+      <div class="text-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Upload a New Pin</h3>
+      </div>
+
+      <input type="file" id="file-upload" class="hidden" accept="image/*" />
+
+      <div class="dropzone mb-4" id="dropzone">
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/a81ae131-403c-4f4b-bf1e-d9c0bd2ee4ce.png" alt="Upload icon" class="mx-auto mb-4 opacity-70 h-16" />
+        <p class="text-gray-600 mb-2">Drag and drop your image here, or click to select</p>
+        <p class="text-sm text-gray-500">PNG, JPG, GIF up to 10MB</p>
+      </div>
+
+      <div class="mb-4">
+        <label for="pin-title" class="block text-gray-700 font-medium mb-2">Title</label>
+        <input type="text" id="pin-title" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600" />
+      </div>
+
+      <div class="mb-4">
+        <label for="pin-description" class="block text-gray-700 font-medium mb-2">Description</label>
+        <textarea id="pin-description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"></textarea>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="uploadPin()" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Username Display -->
+<div class="bg-white shadow p-4 flex justify-between items-center">
+  <h2 class="text-xl font-semibold text-gray-700">Welcome, <%= user?.username || "Guest" %> 👋</h2>
+  <form action="/logout" method="POST">
+    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Logout</button>
+  </form>
+</div>
+
+
+  <!-- Main Content -->
+  <main class="py-8">
+    <div class="max-w-7xl mx-auto px-4">
+      <section class="mb-12 text-center">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">Explore inspiring visuals & collections</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Curate your inspiration, organize ideas into boards, and collaborate with your team</p> 
+        <button onclick="openModal()" class="mt-8 bg-indigo-600 text-white px-6 py-3 rounded-full font-medium hover:bg-indigo-700 transition-colors">Upload your first pin</button>
+      </section>
+    </div>
+
+    <section class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Recently added</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Pin 1 -->
+                    <div class="pin-card bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/32ba5306-8c0b-444f-ac92-9147ab417611.png" alt="Panoramic mountain hike view with hikers in the distance" class="w-full h-64 object-cover">
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v13a1 1 0 01-1.6.8L10 14.25l-4.4 3.55A1 1 0 014 17V4z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-1">Mountain Escape</h3>
+                            <p class="text-sm text-gray-600 mb-2">Beautiful view of the Rockies</p>
+                            <div class="flex items-center text-sm text-gray-500">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/24bef587-ab32-465b-86f1-55abfe44cc17.png" alt="Small circular user profile image with hiking gear" class="h-6 w-6 rounded-full mr-2">
+                                <span>Traveler123</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pin 2 -->
+                    <div class="pin-card bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/041d12bf-7528-42bd-9e22-403af3a772c6.png" alt="Artisan coffee with latte art in a white ceramic cup" class="w-full h-64 object-cover">
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v13a1 1 0 01-1.6.8L10 14.25l-4.4 3.55A1 1 0 014 17V4z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-1">Morning Brew</h3>
+                            <p class="text-sm text-gray-600 mb-2">Perfect start to the day</p>
+                            <div class="flex items-center text-sm text-gray-500">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/4607a899-ad76-4e56-9d2b-2617877bf441.png" alt="Barista profile image with coffee cup" class="h-6 w-6 rounded-full mr-2">
+                                <span>CoffeeLover</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pin 3 -->
+                    <div class="pin-card bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ca7ad324-5b45-4138-9193-eafdb328b998.png" alt="Modern home office setup with clean desk and natural light" class="w-full h-64 object-cover">
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v13a1 1 0 01-1.6.8L10 14.25l-4.4 3.55A1 1 0 014 17V4z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-1">Work Space</h3>
+                            <p class="text-sm text-gray-600 mb-2">Productivity zone</p>
+                            <div class="flex items-center text-sm text-gray-500">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/326bbac9-cab0-46d2-ae85-3a538340d12f.png" alt="Professional headshot of desk worker" class="h-6 w-6 rounded-full mr-2">
+                                <span>HomeOfficeGuy</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pin 4 -->
+                    <div class="pin-card bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b3e305e3-0e89-49fd-aaa9-8be0f0e96be7.png" alt="Homemade pasta with basil and tomato sauce on white plate" class="w-full h-64 object-cover">
+                            <div class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v13a1 1 0 01-1.6.8L10 14.25l-4.4 3.55A1 1 0 014 17V4z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-1">Italian Dinner</h3>
+                            <p class="text-sm text-gray-600 mb-2">Fresh pasta from scratch</p>
+                            <div class="flex items-center text-sm text-gray-500">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f11ee219-615c-4fad-b2ba-f58de55a74bd.png" alt="Chef profile image with cooking apron" class="h-6 w-6 rounded-full mr-2">
+                                <span>PastaChef</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Boards -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Boards</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="h-40 bg-gray-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800">Create new board</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="h-40">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1e2df277-c99d-4413-b3e5-87aa697b3c15.png" alt="Collage of travel photos showing beaches, mountains, and city landmarks" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800">Travel Inspiration</h3>
+                            <p class="text-sm text-gray-600">12 pins</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="h-40">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/a78c60c1-d69d-4bc3-aa77-0ff359f43f1b.png" alt="Various home decor items arranged aesthetically" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800">Home Decor Ideas</h3>
+                            <p class="text-sm text-gray-600">8 pins</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                        <div class="h-40">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/19fd389f-6da4-417f-921e-95ed86fd6aa5.png" alt="Collection of recipes with multiple food dishes and ingredients" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800">Recipes to Try</h3>
+                            <p class="text-sm text-gray-600">15 pins</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <a href="#" class="text-indigo-600 font-bold text-xl">PinShare</a>
+                    <p class="text-gray-600 mt-2">Discover and share beautiful images</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800 mb-4">Company</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">About</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Careers</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800 mb-4">Resources</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Help Center</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Community</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Guidelines</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-800 mb-4">Legal</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Terms</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Privacy</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-indigo-600 text-sm">Copyright</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200 text-center text-gray-500 text-sm">
+                &copy; 2024 PinShare Pro. All rights reserved.
+            </div>
+        </div>
+    </footer>
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const dropzone = document.getElementById('dropzone');
+      const fileUpload = document.getElementById('file-upload');
+
+      dropzone.addEventListener('click', () => fileUpload.click());
+      fileUpload.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+          handleFileUpload(e.target.files[0]);
+        }
+      });
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => dropzone.classList.add('active'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => dropzone.classList.remove('active'), false);
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const file = dt.files[0];
+        handleFileUpload(file);
+      });
+
+      function handleFileUpload(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          dropzone.innerHTML = '';
+          const preview = document.createElement('img');
+          preview.src = e.target.result;
+          preview.className = 'max-h-48 mx-auto mb-4';
+          dropzone.appendChild(preview);
+          dropzone.classList.add('active');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Modal controls
+    function openModal() {
+      document.getElementById('upload-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('upload-modal').classList.add('hidden');
+      resetForm();
+    }
+
+    function resetForm() {
+  const dropzone = document.getElementById('dropzone');
+  dropzone.innerHTML = `
+    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/a81ae131-403c-4f4b-bf1e-d9c0bd2ee4ce.png" alt="Upload icon" class="mx-auto mb-4 opacity-70 h-16" />
+    <p class="text-gray-600 mb-2">Drag and drop your image here, or click to select</p>
+    <p class="text-sm text-gray-500">PNG, JPG, GIF up to 10MB</p>
+  `;
+
+  document.getElementById('pin-title').value = '';
+  document.getElementById('pin-description').value = '';
+  document.getElementById('file-upload').value = ''; // Optional: clear file input
+}
+
+
+    async function uploadPin() {
+  const title = document.getElementById('pin-title').value.trim();
+  const description = document.getElementById('pin-description').value.trim();
+  const fileInput = document.getElementById('file-upload');
+
+  if (!title || !description) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  if (!fileInput.files.length) {
+    alert('Please select an image.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('description', description);
+  formData.append('image', fileInput.files[0]);
+
+  try {
+    const response = await fetch('/pins/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert('Pin uploaded successfully! 🎉');
+      closeModal();
+      resetForm();
+      window.location.reload(); // Refresh to show new pin
+    } else {
+      alert('Upload failed: ' + data.message);
+    }
+  } catch (err) {
+    console.error('Error uploading pin:', err);
+    alert('An error occurred during upload.');
+  }
+}
+
+  </script>
+</body>
+</html>

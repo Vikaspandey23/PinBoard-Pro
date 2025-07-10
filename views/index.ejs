@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to PinShare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    body {
+      background-image: url('https://wallpapers-clan.com/wp-content/uploads/2025/06/car-retro-futuristic-desktop-wallpaper-preview.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white bg-black bg-opacity-60">
+
+  <!-- Header -->
+  <header  class="flex justify-between items-center px-6 md:px-16 py-6">
+    <div style="border-bottom: 2px solid #fff;" class="text-2xl font-bold text-white opacity-80">
+  VIKAS PANDEY - <b>(THE DEVELOPER)</b>
+</div>
+
+    <div class="text-center flex-1">
+      <h1 class="text-5xl font-extrabold text-indigo-300 animate-pulse">Welcome to PinShare</h1>
+      <p class="text-lg text-indigo-100 mt-2">Your visual discovery and sharing platform ✨</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="px-6 md:px-16 py-8">
+
+    <!-- CTA Section -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-10">
+      <div class="max-w-xl p-6 rounded-lg shadow-lg">
+        <h2 class="text-3xl font-bold text-indigo-200 mb-4">Explore Creative Pins</h2>
+        <p class="text-indigo-100 text-lg">Discover and share stunning images curated by our community. Save your favorites into boards and never lose inspiration again.</p>
+        <div class="mt-6 space-x-4">
+          <a href="/register" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md transition duration-300 ease-in-out">Register</a>
+          <a href="/login" class="bg-transparent border border-indigo-400 hover:bg-indigo-600 hover:text-white text-indigo-200 px-6 py-2 rounded-md transition duration-300 ease-in-out">Login</a>
+          <% if (session.userId) { %>
+          <a href="/upload" class="...">Upload Pin</a>
+        <% } else { %>
+          <a href="/login" class="...">Login to Upload</a>
+        <% } %>
+        </div>
+      </div>
+
+      <!-- Optional Lottie Animation
+      
+      <div class="w-96 mt-10 md:mt-0">
+        <lottie-player src="https://lottie.host/c65e76ce-9482-4056-9466-2cb0839ffcf3/sClzMZ85RN.json" background="transparent" speed="1" loop autoplay></lottie-player>
+      </div>  -->
+      
+    </div>
+
+    <!-- Recent Pins -->
+    <section class="mt-12">
+      <h2 class="text-2xl font-bold mb-6 border-b border-indigo-400 pb-2">Recent Pins</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <% if (pins && pins.length > 0) { %>
+          <% pins.forEach(pin => { %>
+            <div class="bg-white bg-opacity-20 rounded-lg overflow-hidden shadow-md hover:shadow-lg transform hover:scale-105 transition duration-300">
+              <img src="<%= pin.imageUrl %>" alt="<%= pin.title %>" class="w-full h-56 object-cover">
+              <div class="p-4">
+                <h3 class="text-xl font-semibold text-indigo-100 mb-1"><%= pin.title %></h3>
+                <p class="text-indigo-200 text-sm"><%= pin.description %></p>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-lg text-center">
+            <p class="text-indigo-100">No pins available yet. Be the first to upload!</p>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 mt-10 border-t border-indigo-500">
+    <p class="text-indigo-300">© 2025 PinShare. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
